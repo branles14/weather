@@ -2,16 +2,22 @@
 
 A simple python based weather utility for managing OpenWeatherMap data.
 
+## Instructions
+
+- Follow Python's best practices.
+- Keep code clean, modular and manageable.
+- Test with black
+
 ## Arguments
 
-The script should accept the following arguments:
+The utility should accept the following arguments:
 
-- `-h|--help`
-- `-u|--units`
-- `-f|--force`
-- `--lat|--latitude`
-- `--lon|--longitude`
-- `-c|--city`
+- `-h|--help` — Display help message
+- `-u|--units` — Set units (metric, imperial, standard)
+- `-f|--force` — Force update by bypassing data age check.
+- `--lat|--latitude LATITUDE` — Provide the latitude of the target location. Must be used with `--lon|--longitude`.
+- `--lon|--longitude LONGITUDE` — Provide the longitude of the target location. Must be used with `--lat|--latitude`.
+- `-c|--city CITY` — Provide the name of the target location. Cannot be used with `--lat|--latitude` or `--lon|--longitude`.
 
 ## Location Resolution Priority
 
@@ -21,3 +27,20 @@ The system determines location using the following prioritized sources. Each ste
 2. Environment Variables: If both `$LATITUDE` and `$LONGITUDE` are set, use these values. If only one is set, exit with an error that clearly identifies this as the cause.
 3. Configuration File: If `~/.config/weather.conf` exists, parse it as a dotenv-style file to extract `LAT` and `LON`. If both are found, use them. If only one is present, exit with an error that clearly identifies this as the cause.
 4. System Utilities (Termux only): If no valid location has been found, and `$PREFIX` matches `/data/data/com.termux/files/usr`, attempt to retrieve GPS coordinates using `termux-location -p gps`
+
+## Caching
+
+Whenever the utility gets new weather data from the OpenWeatherMap API, it should save the data as a one-line json object.
+
+### Cache File
+
+If `$STORAGE` is set, is a directory and can be written inside of, then `cache_file` = `$STORAGE/.cache/weather.json`, otherwise `cache_file` = `$HOME/.cache/weather.json`.
+The utility should ensure the `.cache` directory exists as to avoid FileNotFoundError.
+
+## Data Sourcing
+
+If `cache_file` exists, can be read, and is a valid json object, then the utility should attempt to source the weather data from `cache_file`.
+
+## Output
+
+The utility's standard output should be a one-line json print out of the OpenWeatherMap data.
