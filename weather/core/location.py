@@ -73,19 +73,22 @@ def _location_from_config() -> Optional[Tuple[float, float]]:
 def _location_from_termux() -> Tuple[float, float]:
     """Retrieve GPS coordinates using ``termux-location``.
 
-    A `WeatherError` is raised when the command fails or returns
-    malformed data. Successful calls return a tuple of latitude and
-    longitude.
+    A `WeatherError` is raised when the command fails, the binary is
+    missing, or the data is malformed. Successful calls return a tuple
+    of latitude and longitude.
     """
-    result = subprocess.run(
-        [
-            "termux-location",
-            "-p",
-            "gps",
-        ],
-        capture_output=True,
-        text=True,
-    )
+    try:
+        result = subprocess.run(
+            [
+                "termux-location",
+                "-p",
+                "gps",
+            ],
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError as exc:
+        raise WeatherError("Failed to obtain location from termux") from exc
     if result.returncode != 0 or not result.stdout:
         raise WeatherError("Failed to obtain location from termux")
     try:
