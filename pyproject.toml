@@ -1,6 +1,6 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "weather"
@@ -17,8 +17,6 @@ dependencies = [
 [project.scripts]
 weather = "weather.cli:main"
 
-[tool.hatch.version]
-path = "weather/__init__.py"
 
 [tool.black]
 line-length = 88
