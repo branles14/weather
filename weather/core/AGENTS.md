@@ -2,6 +2,10 @@
 
 A directory for the core business logic of the utility.
 
+## location.py
+
+Attempts to resolve the users location.
+
 ## update.py
 
-The `update.py` script handles sending requests to the OpenWeatherMaps API, saving the data to cache, and returning the data.
+Handles sending requests to the OpenWeatherMaps API, saving the data to cache, and returning the data.
