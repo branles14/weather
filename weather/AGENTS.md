@@ -10,7 +10,7 @@ The main entry point for the CLI where the command-line parser is defined.
 
 Handles configuration parsing from `~/.config/weather.conf`.
 
-here is an example configuration:
+Here is an example configuration:
 
 ```
 # Target Location
@@ -18,5 +18,7 @@ LAT=39.75330
 LONGITUDE=-105.00047
 
 # Settings
-UNITS=
+UNITS=metric
+CACHE_MAX_RANGE=1500
+CACHE_MAX_AGE=600
 ```
