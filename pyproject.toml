@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "weather"
+version = "0.1.0"
+description = "A command-line utility for fetching weather information from OpenWeatherMap"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [ { name = "Weather Maintainer" } ]
+dependencies = [
+    "click>=8.0",
+]
+
+[project.scripts]
+weather = "weather.cli:main"
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
