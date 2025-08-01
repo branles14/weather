@@ -35,12 +35,13 @@ The utility should accept the following arguments:
 
 - `-h|--help` — Display help message
 - `-u|--units` — Set units, either: metric, imperial, standard. (Default: metric)
-- `-f|--force` — Force update by bypassing data age check. (Disabled by default)
-- `--lat|--latitude FLOAT` — Provide the latitude of the target location. Must be used with `--lon|--longitude`.
-- `--lon|--longitude FLOAT` — Provide the longitude of the target location. Must be used with `--lat|--latitude`.
-- `-c|--city TEXT` — Provide the name of the target location. Cannot be used with `--lat|--latitude` or `--lon|--longitude`.
+- `-f|--force` — Force update by bypassing data age check. (Default: default)
+- `--lat|--latitude FLOAT` — Provide the latitude of the target location. Must be used with `--lon|--longitude`
+- `--lon|--longitude FLOAT` — Provide the longitude of the target location. Must be used with `--lat|--latitude`
+- `-c|--city TEXT` — Provide the name of the target location. Cannot be used with `--lat|--latitude` or `--lon|--longitude`
 - `--cache-max-range NUMBER` — Define max distance in meteres of cache. (Default: 1000)
 - `--cache-max-age NUMBER` — Define max age in seconds of cache. (Default: 300)
+- `--token` — Provide the OpenWeatherMaps API token (Default: unset)
 
 ### Location Resolution Priority
 
