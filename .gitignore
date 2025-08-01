@@ -1,3 +1,4 @@
 **/__pycache__/
-weather.egg-info
-.venv
+build/
+weather.egg-info/
+.venv/
