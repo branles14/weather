@@ -8,6 +8,7 @@ The script determines your location automatically and caches results to avoid un
 
 - Python 3.10+
 - An OpenWeatherMap API token provided via the `OWM_TOKEN` environment variable
+  or a `.env` file containing a line like `TOKEN=your-token`
 - `click` (installable with `pip`)
 
 ## Installation
@@ -66,6 +67,8 @@ Responses are stored as JSON in `~/.cache/weather.json` (or `$STORAGE/.cache/wea
 
 ```bash
 OWM_TOKEN=your-token python -m weather.cli -c "Denver" --units imperial
+# or set TOKEN in a .env file and simply run:
+python -m weather.cli -c "Denver" --units imperial
 ```
 
 A single line of JSON describing the current weather will be printed to `stdout`.

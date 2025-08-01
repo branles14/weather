@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+from pathlib import Path
 
 import click
 
@@ -67,7 +68,15 @@ def main(
 
     token = os.environ.get("OWM_TOKEN")
     if not token:
-        raise click.ClickException("OWM_TOKEN environment variable not set")
+        env_path = Path(__file__).resolve().parent.parent / ".env"
+        if env_path.is_file():
+            for line in env_path.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if line.startswith("TOKEN="):
+                    token = line.split("=", 1)[1].strip()
+                    break
+    if not token:
+        raise click.ClickException("No OpenWeatherMap token found in OWM_TOKEN or .env")
 
     try:
         lat, lon = resolve_location(lat, lon, city, token)
