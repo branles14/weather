@@ -78,6 +78,11 @@ def main(
     if not token:
         raise click.ClickException("No OpenWeatherMap token found in OWM_TOKEN or .env")
 
+    if city and (lat is not None or lon is not None):
+        raise click.BadOptionUsage(
+            "--city", "--city cannot be used with --latitude/--longitude"
+        )
+
     try:
         lat, lon = resolve_location(lat, lon, city, token)
     except WeatherError as exc:
