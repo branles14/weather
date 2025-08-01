@@ -11,19 +11,13 @@ A simple python based weather utility for managing OpenWeatherMap data.
 - Ensure errors are graceful and informative
 - Keep `README.md` up-to-date
 - Use click to handle the cli
+- Use pyproject.toml + hatch to handle install
 - Test with black
 
 ## Notes
 
 Use `find . -name AGENTS.md -print` to find all of the `AGENTS.md` files.
 The rest of this document outlines details about the utility.
-
-### Installation 
-
-1. Clone the repo into `~/repos`
-2. `cd` into `~/repos/weather`
-3. `python3 -m venv .venv` and `source .venv/bin/activate`
-4. `pip install --user -e .`
 
 ### Usage
 
