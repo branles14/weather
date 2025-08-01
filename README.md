@@ -13,13 +13,20 @@ The script determines your location automatically and caches results to avoid un
 
 ## Installation
 
-Clone the repository and install the package in editable mode:
+Clone the repository and install the package using
+[Hatch](https://hatch.pypa.io/):
 
 ```bash
-pip install --user -e .
+pip install --upgrade hatch
+hatch build
+pip install dist/weather-0.1.0-py3-none-any.whl
 ```
 
-If you are using a virtual environment you can omit the `--user` flag.
+You can still install in editable mode with:
+
+```bash
+pip install -e .
+```
 
 ## Usage
 
