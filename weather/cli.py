@@ -13,6 +13,7 @@ from .core import WeatherError
 from .core.location import resolve_location
 from .core.update import (
     DEFAULT_MAX_AGE,
+    DEFAULT_MAX_RANGE,
     cache_file,
     fetch_weather,
     read_cache,
@@ -37,6 +38,20 @@ CONFIG = load_config()
 @click.option("-c", "--city", type=str, help="City name for the target location")
 @click.option("-v", "--verbose", is_flag=True, help="Enable verbose output")
 @click.option("-s", "--silent", is_flag=True, help="Suppress normal output")
+@click.option(
+    "--cache-max-range",
+    default=CONFIG.cache_max_range or DEFAULT_MAX_RANGE,
+    show_default=True,
+    type=int,
+    help="Define max distance in meters of cache",
+)
+@click.option(
+    "--cache-max-age",
+    default=CONFIG.cache_max_age or DEFAULT_MAX_AGE,
+    show_default=True,
+    type=int,
+    help="Define max age in seconds of cache",
+)
 def main(
     units: str,
     force: bool,
@@ -45,6 +60,8 @@ def main(
     city: str | None,
     verbose: bool,
     silent: bool,
+    cache_max_range: int,
+    cache_max_age: int,
 ) -> None:
     """Retrieve and display weather data from OpenWeatherMap."""
 
@@ -59,7 +76,9 @@ def main(
 
     cfile = cache_file()
 
-    data = None if force else read_cache(cfile, DEFAULT_MAX_AGE)
+    data = (
+        None if force else read_cache(cfile, lat, lon, cache_max_range, cache_max_age)
+    )
     if data is None:
         try:
             data = fetch_weather(lat, lon, units, token, cfile, verbose)

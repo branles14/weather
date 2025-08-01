@@ -17,6 +17,8 @@ class Config:
     lat: Optional[float] = None
     lon: Optional[float] = None
     units: Optional[str] = None
+    cache_max_range: Optional[int] = None
+    cache_max_age: Optional[int] = None
 
 
 def load_config(path: Path = CONFIG_PATH) -> Config:
@@ -57,4 +59,14 @@ def load_config(path: Path = CONFIG_PATH) -> Config:
                 if val not in VALID_UNITS:
                     raise ValueError(f"Invalid units value: {value}")
                 cfg.units = val
+        elif key == "CACHE_MAX_RANGE":
+            try:
+                cfg.cache_max_range = int(value)
+            except ValueError as exc:
+                raise ValueError(f"Invalid CACHE_MAX_RANGE value: {value}") from exc
+        elif key == "CACHE_MAX_AGE":
+            try:
+                cfg.cache_max_age = int(value)
+            except ValueError as exc:
+                raise ValueError(f"Invalid CACHE_MAX_AGE value: {value}") from exc
     return cfg
