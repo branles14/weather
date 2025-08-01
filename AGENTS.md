@@ -14,6 +14,9 @@ A simple python based weather utility for managing OpenWeatherMap data.
 
 ## Notes
 
+There are many `AGENTS.md` files, so look thoroughly.
+The rest of this document outlines details about the utility.
+
 ### Arguments
 
 The utility should accept the following arguments:
