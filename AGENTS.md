@@ -12,7 +12,7 @@ A simple python based weather utility for managing OpenWeatherMap data.
 - Keep `README.md` up-to-date
 - Use click to handle the cli
 - Use pyproject.toml + hatch to handle install
-- Test with black
+- Test with black and pytest
 
 ## Notes
 
