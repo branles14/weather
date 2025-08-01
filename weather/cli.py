@@ -11,9 +11,12 @@ from pathlib import Path
 from urllib.error import URLError
 from urllib.request import urlopen
 
+from .config import load_config
+
 import click
 
 DEFAULT_MAX_AGE = 300
+CONFIG = load_config()
 
 
 class WeatherError(Exception):
@@ -96,26 +99,11 @@ def _location_from_env() -> tuple[float, float] | None:
 
 
 def _location_from_config() -> tuple[float, float] | None:
-    cfg = Path.home() / ".config/weather.conf"
-    if not cfg.is_file():
+    if CONFIG.lat is None and CONFIG.lon is None:
         return None
-    lat = lon = None
-    for line in cfg.read_text().splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        key, value = line.split("=", 1)
-        key = key.strip().upper()
-        value = value.strip()
-        if key == "LAT":
-            lat = float(value)
-        elif key == "LON":
-            lon = float(value)
-    if lat is not None and lon is not None:
-        return lat, lon
-    if lat is not None or lon is not None:
+    if CONFIG.lat is None or CONFIG.lon is None:
         raise WeatherError("Incomplete location in configuration file")
-    return None
+    return CONFIG.lat, CONFIG.lon
 
 
 def _location_from_termux() -> tuple[float, float]:
@@ -160,7 +148,7 @@ def resolve_location(
 @click.option(
     "-u",
     "--units",
-    default="metric",
+    default=CONFIG.units or "metric",
     show_default=True,
     type=click.Choice(["metric", "imperial", "standard"], case_sensitive=False),
 )
