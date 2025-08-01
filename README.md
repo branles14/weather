@@ -13,18 +13,20 @@ The script determines your location automatically and caches results to avoid un
 
 ## Installation
 
-Clone the repository and install dependencies:
+Clone the repository and install the package in editable mode:
 
 ```bash
-pip install -r requirements.txt
+pip install --user -e .
 ```
+
+If you are using a virtual environment you can omit the `--user` flag.
 
 ## Usage
 
 Run the CLI:
 
 ```bash
-python -m weather.cli [OPTIONS]
+weather [OPTIONS]
 ```
 
 ### Options
@@ -66,12 +68,20 @@ Responses are stored as JSON in `~/.cache/weather.json` (or `$STORAGE/.cache/wea
 ## Example
 
 ```bash
-OWM_TOKEN=your-token python -m weather.cli -c "Denver" --units imperial
+OWM_TOKEN=your-token weather -c "Denver" --units imperial
 # or set TOKEN in a .env file and simply run:
-python -m weather.cli -c "Denver" --units imperial
+weather -c "Denver" --units imperial
 ```
 
 A single line of JSON describing the current weather will be printed to `stdout`.
+
+## Development
+
+Run [black](https://black.readthedocs.io/) in check mode to verify formatting:
+
+```bash
+black --check .
+```
 
 ## License
 
