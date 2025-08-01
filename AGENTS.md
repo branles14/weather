@@ -15,7 +15,7 @@ A simple python based weather utility for managing OpenWeatherMap data.
 
 ## Notes
 
-There are many `AGENTS.md` files, so look thoroughly.
+Use `find . -name AGENTS.md -print` to find all of the `AGENTS.md` files.
 The rest of this document outlines details about the utility.
 
 ### Instillation
@@ -23,7 +23,11 @@ The rest of this document outlines details about the utility.
 1. Clone the repo into `~/repos`
 2. `cd` into `~/repos/weather`
 3. `python3 -m venv .venv` and `source .venv/bin/activate`
-4. `pip install -e .`
+4. `pip install --user -e .`
+
+### Usage
+
+After installing the utility, the user or other applications can simply run the command `weather` to get weather data.
 
 ### Arguments
 
