@@ -11,7 +11,6 @@ A simple python based weather utility for managing OpenWeatherMap data.
 - Ensure errors are graceful and informative
 - Keep `README.md` up-to-date
 - Use click to handle the cli
-- Use pyproject.toml + hatch to handle install
 - Test with black and pytest
 
 ## Notes
