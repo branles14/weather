@@ -6,6 +6,7 @@ A simple python based weather utility for managing OpenWeatherMap data.
 
 - Follow Python's best practices
 - Keep code clean, modular and manageable
+- Standardize variables naming convention, and use detailed and informative docstrings
 - Always keep `README.md` and `requirements.txt` up-to-date
 - utility should be installed with `pip install .`
 - Use click to handle the cli
