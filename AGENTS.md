@@ -46,6 +46,8 @@ The utility should ensure the `.cache` directory exists as to avoid FileNotFound
 
 ### Data Sourcing
 
+Data should be sourced in this order to minimize API calls.
+
 #### Sourcing Data From Cache
 
 If `cache_file` exists, can be read, and is a valid json object, then the utility should attempt to source `weather_data` from `cache_file`.
@@ -54,6 +56,10 @@ The cache is only considered valid if:
 
 1. It's within `cache_max_range` meters of the target location.
 2. It's less than `cache_max_age` seconds of the cache age.
+
+#### Sourcing Data From OpenWeatherMaps
+
+Use `$OWM_TOKEN` or `TOKEN` from `.env` in the projects root dir to get the OpenWeatherMaps API key.
 
 ### Output
 
