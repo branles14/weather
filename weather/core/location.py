@@ -12,8 +12,6 @@ from urllib.request import urlopen
 from ..config import load_config
 from . import WeatherError
 
-CONFIG = load_config()
-
 
 def _geocode_city(city: str, token: str) -> Tuple[float, float]:
     """Resolve *city* name to latitude and longitude using OpenWeatherMap."""
@@ -53,15 +51,23 @@ def _location_from_env() -> Optional[Tuple[float, float]]:
 def _location_from_config() -> Optional[Tuple[float, float]]:
     """Return coordinates from the configuration file if both are defined.
 
+    The configuration is loaded on each call. If loading fails a
+    ``WeatherError`` is raised with the message from ``load_config``.
+
     When only one of the latitude or longitude values exists, a
-    `WeatherError` is raised. When neither is found the function
+    ``WeatherError`` is raised. When neither is found the function
     returns ``None``.
     """
-    if CONFIG.lat is None and CONFIG.lon is None:
+    try:
+        cfg = load_config()
+    except ValueError as exc:
+        raise WeatherError(str(exc)) from exc
+
+    if cfg.lat is None and cfg.lon is None:
         return None
-    if CONFIG.lat is None or CONFIG.lon is None:
+    if cfg.lat is None or cfg.lon is None:
         raise WeatherError("Incomplete location in configuration file")
-    return CONFIG.lat, CONFIG.lon
+    return cfg.lat, cfg.lon
 
 
 def _location_from_termux() -> Tuple[float, float]:
