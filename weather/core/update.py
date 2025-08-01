@@ -17,19 +17,18 @@ DEFAULT_MAX_AGE = 300
 DEFAULT_MAX_RANGE = 1000
 
 
-def _distance_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    """Return the distance in meters between two coordinates."""
+def _haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Return the great-circle distance in meters between two points."""
     from math import radians, cos, sin, asin, sqrt
 
-    r = 6371000.0
+    r = 6371000.0  # Earth radius in meters
     dlat = radians(lat2 - lat1)
     dlon = radians(lon2 - lon1)
-    a = (
-        sin(dlat / 2) ** 2
-        + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) ** 2
-    )
-    c = 2 * asin(sqrt(a))
-    return r * c
+    lat1 = radians(lat1)
+    lat2 = radians(lat2)
+
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    return 2 * r * asin(sqrt(a))
 
 
 def cache_file() -> Path:
@@ -52,7 +51,20 @@ def read_cache(
     max_range: int = DEFAULT_MAX_RANGE,
     max_age: int = DEFAULT_MAX_AGE,
 ) -> Optional[dict]:
-    """Load cached weather data from *path* if it's still valid."""
+    """Return cached data if it's close enough and recent.
+
+    Parameters
+    ----------
+    path:
+        Location of the cached JSON file.
+    lat, lon:
+        Target coordinates used to validate the cache.
+    max_range:
+        Maximum allowed distance in meters between the cache coordinates and the
+        requested coordinates. Negative values disable the check.
+    max_age:
+        Maximum cache age in seconds.
+    """
     if not path.is_file():
         return None
     try:
@@ -68,7 +80,7 @@ def read_cache(
             cached_lon, (int, float)
         ):
             return None
-        if _distance_m(lat, lon, float(cached_lat), float(cached_lon)) > max_range:
+        if _haversine_m(lat, lon, float(cached_lat), float(cached_lon)) > max_range:
             return None
 
     dt = data.get("current", {}).get("dt")
