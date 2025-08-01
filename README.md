@@ -8,7 +8,8 @@ for quick subsequent access.
 ## Usage
 
 ```bash
-./weather.py [--unit metric|imperial|standard] [--force] [--verbose] [--silent]
+./weather.py -u metric|imperial|standard [--force] [--lat LAT --lon LON]
+             [--city CITY] [--verbose] [--silent]
 ```
 
 Set the `OWM_TOKEN` environment variable to your OpenWeatherMap API token
