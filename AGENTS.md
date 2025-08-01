@@ -18,7 +18,7 @@ A simple python based weather utility for managing OpenWeatherMap data.
 Use `find . -name AGENTS.md -print` to find all of the `AGENTS.md` files.
 The rest of this document outlines details about the utility.
 
-### Instillation
+### Installation 
 
 1. Clone the repo into `~/repos`
 2. `cd` into `~/repos/weather`
