@@ -33,6 +33,11 @@ def _geocode_city(city: str, token: str) -> Tuple[float, float]:
 
 
 def _location_from_env() -> Optional[Tuple[float, float]]:
+    """Return coordinates from `$LATITUDE` and `$LONGITUDE` if both are set.
+
+    Raises `WeatherError` when only one of the variables is defined,
+    otherwise returns ``None`` when neither is present.
+    """
     lat = os.environ.get("LATITUDE")
     lon = os.environ.get("LONGITUDE")
     if lat and lon:
@@ -43,6 +48,12 @@ def _location_from_env() -> Optional[Tuple[float, float]]:
 
 
 def _location_from_config() -> Optional[Tuple[float, float]]:
+    """Return coordinates from the configuration file if both are defined.
+
+    When only one of the latitude or longitude values exists, a
+    `WeatherError` is raised. When neither is found the function
+    returns ``None``.
+    """
     if CONFIG.lat is None and CONFIG.lon is None:
         return None
     if CONFIG.lat is None or CONFIG.lon is None:
@@ -51,6 +62,12 @@ def _location_from_config() -> Optional[Tuple[float, float]]:
 
 
 def _location_from_termux() -> Tuple[float, float]:
+    """Retrieve GPS coordinates using ``termux-location``.
+
+    A `WeatherError` is raised when the command fails or returns
+    malformed data. Successful calls return a tuple of latitude and
+    longitude.
+    """
     result = subprocess.run(
         [
             "termux-location",
