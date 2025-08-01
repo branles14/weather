@@ -6,7 +6,8 @@ A simple python based weather utility for managing OpenWeatherMap data.
 
 - Follow Python's best practices.
 - Keep code clean, modular and manageable.
-- Test with black
+- Use click to handle the cli.
+- Test with black.
 
 ## Arguments
 
