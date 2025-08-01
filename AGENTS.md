@@ -6,6 +6,7 @@ A simple python based weather utility for managing OpenWeatherMap data.
 
 - Follow Python's best practices.
 - Keep code clean, modular and manageable.
+- Always keep `README.md` and `requirements.txt` up-to-date.
 - Use click to handle the cli.
 - Test with black.
 
@@ -21,6 +22,8 @@ The utility should accept the following arguments:
 - `--lat|--latitude LATITUDE` — Provide the latitude of the target location. Must be used with `--lon|--longitude`.
 - `--lon|--longitude LONGITUDE` — Provide the longitude of the target location. Must be used with `--lat|--latitude`.
 - `-c|--city CITY` — Provide the name of the target location. Cannot be used with `--lat|--latitude` or `--lon|--longitude`.
+- `--cache-max-range` — Define max distance in meteres of cache.
+- `--cache-max-age` — Define max age in seconds of cache.
 
 ### Location Resolution Priority
 
@@ -48,8 +51,8 @@ If `cache_file` exists, can be read, and is a valid json object, then the utilit
 
 The cache is only considered valid if:
 
-1. It's within `cache_min_range` meters of the target location
-2. It's less than `cache_max_age` seconds of the cache age
+1. It's within `cache_max_range` meters of the target location.
+2. It's less than `cache_max_age` seconds of the cache age.
 
 ### Output
 
