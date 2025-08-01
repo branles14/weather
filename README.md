@@ -35,6 +35,8 @@ python -m weather.cli [OPTIONS]
 - `-c, --city TEXT` — Name of the target city. Cannot be used with `--lat` or `--lon`.
 - `-v, --verbose` — Print progress information to stderr.
 - `-s, --silent` — Suppress normal output.
+- `--cache-max-range NUMBER` — Define max distance in meters of cache.
+- `--cache-max-age NUMBER` — Define max age in seconds of cache.
 
 ### Location Resolution
 
@@ -52,11 +54,13 @@ If latitude and longitude are not supplied, the tool resolves the location in th
 LAT=39.7533
 LONGITUDE=-105.00047
 UNITS=imperial
+CACHE_MAX_RANGE=1500
+CACHE_MAX_AGE=600
 ```
 
 ### Caching
 
-Responses are stored as JSON in `~/.cache/weather.json` (or `$STORAGE/.cache/weather.json` when `$STORAGE` is writable). Cached data younger than five minutes is reused unless `--force` is specified.
+Responses are stored as JSON in `~/.cache/weather.json` (or `$STORAGE/.cache/weather.json` when `$STORAGE` is writable). Cached data younger than the configured `cache-max-age` is reused and only when within `cache-max-range` meters of the target location. Use `--force` to bypass the cache.
 
 ## Example
 

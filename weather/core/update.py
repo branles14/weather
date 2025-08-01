@@ -14,6 +14,22 @@ from . import WeatherError
 
 
 DEFAULT_MAX_AGE = 300
+DEFAULT_MAX_RANGE = 1000
+
+
+def _distance_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Return the distance in meters between two coordinates."""
+    from math import radians, cos, sin, asin, sqrt
+
+    r = 6371000.0
+    dlat = radians(lat2 - lat1)
+    dlon = radians(lon2 - lon1)
+    a = (
+        sin(dlat / 2) ** 2
+        + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) ** 2
+    )
+    c = 2 * asin(sqrt(a))
+    return r * c
 
 
 def cache_file() -> Path:
@@ -29,7 +45,13 @@ def cache_file() -> Path:
     return cache_dir / "weather.json"
 
 
-def read_cache(path: Path, max_age: int = DEFAULT_MAX_AGE) -> Optional[dict]:
+def read_cache(
+    path: Path,
+    lat: float,
+    lon: float,
+    max_range: int = DEFAULT_MAX_RANGE,
+    max_age: int = DEFAULT_MAX_AGE,
+) -> Optional[dict]:
     """Load cached weather data from *path* if it's still valid."""
     if not path.is_file():
         return None
@@ -38,6 +60,16 @@ def read_cache(path: Path, max_age: int = DEFAULT_MAX_AGE) -> Optional[dict]:
             data = json.load(fh)
     except json.JSONDecodeError:
         return None
+
+    if max_range >= 0:
+        cached_lat = data.get("lat")
+        cached_lon = data.get("lon")
+        if not isinstance(cached_lat, (int, float)) or not isinstance(
+            cached_lon, (int, float)
+        ):
+            return None
+        if _distance_m(lat, lon, float(cached_lat), float(cached_lon)) > max_range:
+            return None
 
     dt = data.get("current", {}).get("dt")
     if not isinstance(dt, (int, float)):
@@ -68,4 +100,10 @@ def fetch_weather(
     return data
 
 
-__all__ = ["cache_file", "read_cache", "fetch_weather", "DEFAULT_MAX_AGE"]
+__all__ = [
+    "cache_file",
+    "read_cache",
+    "fetch_weather",
+    "DEFAULT_MAX_AGE",
+    "DEFAULT_MAX_RANGE",
+]
