@@ -13,20 +13,18 @@ The script determines your location automatically and caches results to avoid un
 
 ## Installation
 
-Clone the repository and install the package using
-[Hatch](https://hatch.pypa.io/):
+Clone the repository and install the package using `pip`:
 
 ```bash
-pip install --upgrade hatch
-hatch build
-pip install dist/weather-0.1.0-py3-none-any.whl
-```
+# Install locally
+pip install .
 
-You can still install in editable mode with:
-
-```bash
+# Or editable mode for development
 pip install -e .
 ```
+
+Both commands place the `weather` script on your `PATH` so you can run it from
+anywhere.
 
 ## Usage
 
