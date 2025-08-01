@@ -41,7 +41,10 @@ def _location_from_env() -> Optional[Tuple[float, float]]:
     lat = os.environ.get("LATITUDE")
     lon = os.environ.get("LONGITUDE")
     if lat and lon:
-        return float(lat), float(lon)
+        try:
+            return float(lat), float(lon)
+        except ValueError:
+            raise WeatherError("Invalid LATITUDE or LONGITUDE value")
     if lat or lon:
         raise WeatherError("Incomplete location in environment variables")
     return None
