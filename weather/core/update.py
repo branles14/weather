@@ -92,20 +92,41 @@ def read_cache(
 
 
 def fetch_weather(
-    lat: float, lon: float, units: str, token: str, path: Path, verbose: bool = False
+    lat: float,
+    lon: float,
+    units: str,
+    token: str,
+    path: Path,
+    verbose: bool = False,
+    retries: int = 2,
+    timeout: int = 10,
 ) -> dict:
-    """Fetch fresh weather data from OpenWeatherMap and update the cache."""
+    """Fetch fresh weather data from OpenWeatherMap and update the cache.
+
+    Includes a small retry with exponential backoff for transient failures.
+    """
     url = (
         "https://api.openweathermap.org/data/3.0/onecall"
         f"?lat={lat}&lon={lon}&appid={token}&units={units}"
     )
-    if verbose:
-        print("Requesting data from OpenWeatherMap", file=os.sys.stderr)
-    try:
-        with urlopen(url) as resp:
-            data = json.load(resp)
-    except URLError as exc:
-        raise WeatherError("Failed to retrieve weather data") from exc
+    attempt = 0
+    while True:
+        if verbose:
+            print(
+                f"Requesting data from OpenWeatherMap (attempt {attempt + 1})",
+                file=os.sys.stderr,
+            )
+        try:
+            with urlopen(url, timeout=timeout) as resp:
+                data = json.load(resp)
+            break
+        except URLError as exc:
+            if attempt >= retries:
+                raise WeatherError("Failed to retrieve weather data") from exc
+            # Exponential backoff: 0.5, 1.0, 2.0, ... seconds
+            backoff = 0.5 * (2 ** attempt)
+            time.sleep(backoff)
+            attempt += 1
 
     with path.open("w", encoding="utf-8") as fh:
         json.dump(data, fh)

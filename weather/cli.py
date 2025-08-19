@@ -10,6 +10,7 @@ from pathlib import Path
 import click
 
 from .config import load_config
+from .env import ensure_owm_token
 from .core import WeatherError
 from .core.location import resolve_location
 from .core.update import (
@@ -35,8 +36,16 @@ from .core.update import (
 @click.option("--lat", "--latitude", "lat", type=float)
 @click.option("--lon", "--longitude", "lon", type=float)
 @click.option("-c", "--city", type=str, help="City name for the target location")
+@click.option("--token", type=str, default=None, help="OpenWeatherMap API token")
 @click.option("-v", "--verbose", is_flag=True, help="Enable verbose output")
-@click.option("-s", "--silent", is_flag=True, help="Suppress normal output")
+@click.option(
+    "-s",
+    "--silent",
+    "-q",
+    "--quiet",
+    is_flag=True,
+    help="Suppress normal output",
+)
 @click.option(
     "--cache-max-range",
     default=None,
@@ -57,6 +66,7 @@ def main(
     lat: float | None,
     lon: float | None,
     city: str | None,
+    token: str | None,
     verbose: bool,
     silent: bool,
     cache_max_range: int | None,
@@ -76,17 +86,11 @@ def main(
     if cache_max_age is None:
         cache_max_age = config.cache_max_age or DEFAULT_MAX_AGE
 
-    token = os.environ.get("OWM_TOKEN")
     if not token:
-        env_path = Path(__file__).resolve().parent.parent / ".env"
-        if env_path.is_file():
-            for line in env_path.read_text(encoding="utf-8").splitlines():
-                line = line.strip()
-                if line.startswith("TOKEN="):
-                    token = line.split("=", 1)[1].strip()
-                    break
-    if not token:
-        raise click.ClickException("No OpenWeatherMap token found in OWM_TOKEN or .env")
+        try:
+            token = ensure_owm_token()
+        except WeatherError as exc:
+            raise click.ClickException(str(exc)) from exc
 
     if city and (lat is not None or lon is not None):
         raise click.BadOptionUsage(

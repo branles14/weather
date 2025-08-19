@@ -18,6 +18,14 @@ dependencies = [
 weather = "weather.cli:main"
 
 
+[project.optional-dependencies]
+# Developer tooling only; not required at runtime
+dev = [
+    "black>=24.0.0",
+    "pytest>=7.0",
+]
+
+
 [tool.black]
 line-length = 88
 target-version = ["py310"]

@@ -1,13 +1,42 @@
-"""Configuration parser for the weather utility."""
+"""Configuration parser for the weather utility.
+
+Supports XDG-style configuration at:
+- ``$XDG_CONFIG_HOME/weather/weather.conf`` (preferred)
+- ``~/.config/weather/weather.conf``
+
+For backward compatibility it also accepts the legacy path:
+- ``~/.config/weather.conf``
+
+The parser also accepts an explicit path argument for testing.
+"""
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-CONFIG_PATH = Path.home() / ".config/weather.conf"
 VALID_UNITS = {"metric", "imperial", "standard"}
+
+
+def _xdg_config_home() -> Path:
+    """Return the XDG config home directory.
+
+    Respects ``$XDG_CONFIG_HOME`` with fallback to ``~/.config``.
+    """
+    env = os.environ.get("XDG_CONFIG_HOME")
+    return Path(env).expanduser() if env else Path.home() / ".config"
+
+
+def _candidate_paths() -> list[Path]:
+    """Return config search paths in priority order."""
+    xdg = _xdg_config_home()
+    return [
+        xdg / "weather/weather.conf",  # preferred location
+        Path.home() / ".config/weather/weather.conf",  # fallback
+        Path.home() / ".config/weather.conf",  # legacy
+    ]
 
 
 @dataclass
@@ -19,23 +48,28 @@ class Config:
     units: Optional[str] = None
     cache_max_range: Optional[int] = None
     cache_max_age: Optional[int] = None
+    token: Optional[str] = None
 
 
-def load_config(path: Path = CONFIG_PATH) -> Config:
-    """Load configuration from *path*.
+def load_config(path: Optional[Path] = None) -> Config:
+    """Load configuration from a path or known locations.
 
-    Parameters
-    ----------
-    path:
-        Location of the configuration file. Defaults to
-        ``~/.config/weather.conf``.
+    If ``path`` is supplied it is used directly. Otherwise the first existing
+    file found in the candidate path list is loaded. Missing files yield an
+    empty ``Config``.
     """
-
     cfg = Config()
-    if not path.is_file():
+
+    if path is None:
+        for candidate in _candidate_paths():
+            if candidate.is_file():
+                path = candidate
+                break
+
+    if path is None or not Path(path).is_file():
         return cfg
 
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line in Path(path).read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if not line or line.startswith("#") or "=" not in line:
             continue
@@ -69,4 +103,7 @@ def load_config(path: Path = CONFIG_PATH) -> Config:
                 cfg.cache_max_age = int(value)
             except ValueError as exc:
                 raise ValueError(f"Invalid CACHE_MAX_AGE value: {value}") from exc
+        elif key in {"OWM_TOKEN", "TOKEN"}:  # TOKEN accepted for legacy compatibility
+            if value:
+                cfg.token = value
     return cfg
