@@ -20,7 +20,7 @@ The rest of this document outlines details about the utility.
 
 ### Usage
 
-After installing the utility, the user or other applications can simply run the command `weather` to get weather data.
+After installing, the user can run the terminal command `weather` to get weather data.
 
 ### Arguments
 
@@ -42,7 +42,7 @@ The system determines location using the following prioritized sources. Each ste
 
 1. Command-line Arguments: If `--lat|--latitude` and `--lon|--longitude` are both provided, use these values. If only one is provided, exit with an error indicating incomplete location input.
 2. Environment Variables: If both `$LATITUDE` and `$LONGITUDE` are set, use these values. If only one is set, exit with an error that clearly identifies this as the cause.
-3. Configuration File: If `~/.config/weather.conf` exists, parse it as a dotenv-style file to extract `LAT` and `LON`. If both are found, use them. If only one is present, exit with an error that clearly identifies this as the cause.
+3. Configuration File: If `~/.config/weather.conf` exists, parse it as a dotenv-style file to extract `LAT|LATITUDE` and `LON|LONGITUDE`. If both are found, use them. If only one is present, exit with an error that clearly identifies this as the cause.
 4. System Utilities (Termux only): If no valid location has been found, and `$PREFIX` matches `/data/data/com.termux/files/usr`, attempt to retrieve GPS coordinates using `termux-location -p gps`
 
 ### Caching
@@ -51,25 +51,25 @@ Whenever the utility gets new weather data from the OpenWeatherMap API, it shoul
 
 #### Cache File
 
-If `$STORAGE` is set, is a directory and can be written inside of, then `cache_file` = `$STORAGE/.cache/weather.json`, otherwise `cache_file` = `$HOME/.cache/weather.json`.
+If `$STORAGE` is set, is a directory and can be written inside of, then `CACHE_FILE` = `$STORAGE/.cache/weather.json`, otherwise `CACHE_FILE` = `$HOME/.cache/weather.json`.
 The utility should ensure the `.cache` directory exists as to avoid FileNotFoundError.
 
 ### Data Sourcing
 
-Data should be sourced in this order to minimize API calls.
+Data should be sourced in this order to minimize API calls:
 
 #### Sourcing Data From Cache
 
-If `cache_file` exists, can be read, and is a valid json object, then the utility should attempt to source `weather_data` from `cache_file`.
+If `CACHE_FILE` exists, can be read, and is a valid json object, then the utility should attempt to source `WEATHER_DATA` from `CACHE_FILE`.
 
 The cache is only considered valid if:
 
-1. It's within `cache_max_range` meters of the target location.
-2. It's less than `cache_max_age` seconds of the cache age.
+1. It's within `CACHE_MAX_RANGE` meters of the target location.
+2. It's less than `CACHE_MAX_AGE` seconds of the cache age.
 
 #### Sourcing Data From OpenWeatherMaps
 
-Use `$OWM_TOKEN` or `TOKEN` from `.env` in the projects root dir to get the OpenWeatherMaps API key.
+Use `$OWM_TOKEN` or `OWM_TOKEN` from `.env` in the projects root dir to get the OpenWeatherMaps API key.
 
 ### Output
 
