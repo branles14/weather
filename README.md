@@ -12,27 +12,112 @@ The script determines your location automatically and caches results to avoid un
 
 ## Installation
 
-Recommended: install with [pipx](https://pipx.pypa.io/) so the `weather` command
-is isolated and on your PATH:
+You have a few options depending on your environment and preference.
+
+### Termux (recommended)
+
+Termux does not always provide `pipx`. The most reliable approach is to install
+into the repo’s virtualenv (managed by `.envrc`/direnv) and create a small
+wrapper in `~/.local/bin` that runs the CLI via that venv.
+
+1) In the repo, set up the venv and install:
 
 ```bash
-pipx install .
+direnv allow           # once, to permit activation of .venv
+pip install -e .       # or: pip install -e .[dev]
 ```
 
-Updating after changes during development:
+2) Create the wrapper script at `~/.local/bin/weather`:
 
 ```bash
+mkdir -p ~/.local/bin
+cat > ~/.local/bin/weather <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+REPO="$HOME/Repos/weather"          # adjust if your repo path differs
+VENV="$REPO/.venv"
+PY="$VENV/bin/python"
+if [ ! -x "$PY" ]; then
+  echo "weather: venv not found at $VENV. Run: (cd $REPO && direnv allow && pip install -e .)" >&2
+  exit 1
+fi
+exec "$PY" -m weather.cli "$@"
+EOF
+chmod +x ~/.local/bin/weather
+```
+
+3) Ensure `~/.local/bin` is on your PATH and test:
+
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+exec $SHELL -l
+weather -h
+```
+
+Alternative: instead of a wrapper, you can symlink the venv entrypoint from the
+repo directory:
+
+```bash
+mkdir -p ~/.local/bin
+ln -sf "$(pwd)/.venv/bin/weather" ~/.local/bin/weather
+```
+
+Both approaches avoid recursion and ensure the command uses this project’s
+virtualenv. If you later move the repo, update the wrapper’s `REPO` path or
+recreate the symlink.
+
+### Termux + direnv (repo venv only)
+
+This repository includes an `.envrc` that auto-creates and activates a
+virtualenv in `.venv` (via `direnv`). Inside the repo:
+
+```bash
+direnv allow     # once, to permit activation
+pip install -e . # or `pip install -e .[dev]` for dev tools
+weather -h       # available while you are in the repo (venv active)
+```
+
+Note: `weather` is only on PATH while the venv is active (i.e., when you are in
+the repo). Use the Termux wrapper above for a global command.
+
+### Global install with pipx (recommended)
+
+Install with [pipx](https://pipx.pypa.io/) to get an isolated environment and a
+`weather` command on your PATH everywhere:
+
+```bash
+# On systems where pipx is available
+# (Termux may not ship pipx; prefer the Termux method above)
+python -m pip install --user pipx  # or your OS package manager
+pipx ensurepath         # ensure ~/.local/bin is on PATH
+pipx install .          # from the repo directory
+
+# Update after changes
 pipx reinstall .
 ```
 
-Alternatives:
+### Global install with pip --user
+
+If you prefer a user install:
 
 ```bash
-# User install (places script in ~/.local/bin)
-pip install --user .
+# Temporarily avoid the repo venv if direnv is active
+direnv disable  # or run from a parent directory
+python -m pip install --user .
 
-# Or inside a virtualenv
+# Ensure user bin is on PATH (Termux)
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+```
+
+### Plain virtualenv (no direnv)
+
+```bash
+python -m venv ~/.virtualenvs/weather
+source ~/.virtualenvs/weather/bin/activate
 pip install .
+weather -h
 ```
 
 ## Usage
@@ -60,9 +145,11 @@ weather [OPTIONS]
 
 If latitude and longitude are not supplied, the tool resolves the location in the following order:
 
-1. `$LATITUDE` and `$LONGITUDE` environment variables.
-2. `~/.config/weather.conf` configuration file.
-3. `termux-location` when running inside Termux.
+1. CLI `--lat/--lon` options (both required if used).
+2. `$LATITUDE` and `$LONGITUDE` environment variables (both must be set).
+3. XDG config file `~/.config/weather/weather.conf` (also accepts legacy
+   `~/.config/weather.conf`), using keys `LAT|LATITUDE` and `LON|LONGITUDE`.
+4. `termux-location -p gps` when running inside Termux.
 
 ### Configuration File
 
